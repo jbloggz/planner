@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.table :where(th, td) {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.table :where(th:first-child) {
+  z-index: 10;
+}
+
+.table :where(th:not(:last-child), td:not(:last-child)) {
+  border-right-width: 1px;
+  --tw-border-opacity: 1;
+  border-right-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)));
+}
+
+.table :where(tbody td:not(:last-child)) {
+  cursor: pointer;
+}
+
+.table tbody td:hover {
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-bg-opacity, 1)));
+}
