@@ -14,19 +14,19 @@ function WorkBlockDialog(props: WorkBlockDialogProps) {
             <div className="label">
               <span className="label-text">Title</span>
             </div>
-            <input type="text" className="input input-bordered w-full" />
+            <input type="text" required className="input input-bordered w-full" />
           </label>
           <label className="form-control w-full">
             <div className="label">
               <span className="label-text">Description</span>
             </div>
-            <textarea className="textarea textarea-bordered"></textarea>
+            <textarea required className="textarea textarea-bordered"></textarea>
           </label>
           <label className="form-control w-full max-w-16">
             <div className="label">
               <span className="label-text">Days</span>
             </div>
-            <input type="number" min={1} className="input input-bordered w-full" />
+            <input type="number" required min={1} className="input input-bordered w-full" />
           </label>
           <div className="flex flex-row">
             <div className="flex-grow"></div>
