@@ -2,6 +2,7 @@ import Draggable from 'react-draggable';
 import { useRef, useState } from 'react';
 import WorkBlock from './components/WorkBlock';
 import TopBar from './components/TopBar';
+import Datepicker, { DateValueType } from 'react-tailwindcss-datepicker';
 
 function POC() {
   const firstColumnWidth = 'w-64';
@@ -15,6 +16,11 @@ function POC() {
   const [originalPos, setOrginalPos] = useState({ x: 0, y: 0 });
   const modalRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
+
+  const [value, setValue] = useState<DateValueType>({
+    startDate: null,
+    endDate: null,
+  });
 
   const plan = [
     {
@@ -40,14 +46,10 @@ function POC() {
     },
   ];
 
-  const range = {
-    start: '2025-01-25',
-    end: '2025-02-22',
-  };
-
   return (
     <>
       <TopBar />
+      <Datepicker value={value} onChange={(newValue) => setValue(newValue)} />
       <div className="container mx-auto px-3 my-3">
         <input type="range" min={0} max={14} value={zoom} onChange={(ev) => setZoom(+ev.currentTarget.value)} className="range my-5 w-64" />
         <WorkBlock
