@@ -1,6 +1,6 @@
-import { cleanup, render, screen } from '@testing-library/react';
-import WorkBlock from './WorkBlock';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { cleanup, render } from '@testing-library/react';
+import WorkBlock from './WorkBlock';
 
 describe('WorkBlock Component', () => {
   beforeEach(() => {
