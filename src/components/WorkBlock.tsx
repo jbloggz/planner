@@ -1,28 +1,6 @@
+import { workBlockColor } from '../types';
 import { getCellWidth } from '../util';
 import WorkBlockDialog from './WorkBlockDialog';
-
-type workBlockColor =
-  | 'red'
-  | 'slate'
-  | 'gray'
-  | 'zinc'
-  | 'stone'
-  | 'orange'
-  | 'amber'
-  | 'yellow'
-  | 'lime'
-  | 'green'
-  | 'emerald'
-  | 'teal'
-  | 'cyan'
-  | 'sky'
-  | 'blue'
-  | 'indigo'
-  | 'violet'
-  | 'purple'
-  | 'fuchsia'
-  | 'pink'
-  | 'rose';
 
 interface WorkBlockProps {
   id: number;
