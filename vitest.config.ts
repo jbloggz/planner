@@ -7,5 +7,6 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       provider: 'istanbul',
     },
+    setupFiles: ['src/setupTests.ts'],
   },
 });
