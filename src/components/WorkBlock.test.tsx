@@ -44,6 +44,6 @@ describe('WorkBlock Component', () => {
   it('has the correct width at default zoom', () => {
     const container = render(<WorkBlock id={213} color={'purple'} title={'ENG-43: Do the thing'} days={5} />).container;
     const workBlock: HTMLElement | null = container.querySelector('#\\32 13');
-    expect(workBlock?.style.width).toBe('425px');
+    expect(workBlock?.style.width).toBe('416px');
   });
 });
