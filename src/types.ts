@@ -22,10 +22,12 @@ export type workBlockColor =
   | 'rose';
 
 export interface Task {
+  id: number;
   title: string;
   description: string;
   days: number;
   startDate: string;
+  color: workBlockColor;
 }
 
 export interface Person {
