@@ -1,8 +1,9 @@
 import Draggable from 'react-draggable';
 import { useRef, useState } from 'react';
-import WorkBlock from './components/WorkBlock';
 import TopBar from './components/TopBar';
-import Datepicker, { DateValueType } from 'react-tailwindcss-datepicker';
+import Datepicker from 'react-tailwindcss-datepicker';
+import PlannerTable from './components/PlannerTable';
+import { Person } from './types';
 
 function POC() {
   const firstColumnWidth = 'w-64';
@@ -15,28 +16,27 @@ function POC() {
   const [selectedElem, setSelectedElem] = useState('');
   const [originalPos, setOrginalPos] = useState({ x: 0, y: 0 });
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [open, setOpen] = useState(false);
 
-  const [value, setValue] = useState<DateValueType>({
-    startDate: null,
-    endDate: null,
+  const [dateValue, setDateValue] = useState({
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
   });
 
-  const plan = [
+  const plan: Person[] = [
     {
       name: 'Hart Hagerty',
       avatar: 'https://img.daisyui.com/images/profile/demo/2@94.webp',
       role: 'Frontend',
       tasks: [
-        { name: 'ENG-41: Seek first', days: 2, start: '2025-02-02' },
-        { name: 'ENG-42: Seek first', days: 4, start: '2025-02-06' },
+        { id: 123, title: 'ENG-41: Seek first', description: 'foo', days: 2, startDate: '2025-02-02', color: 'blue' },
+        { id: 456, title: 'ENG-42: Seek first', description: 'bar', days: 4, startDate: '2025-02-06', color: 'green' },
       ],
     },
     {
       name: 'Brice Swyre',
       avatar: 'https://img.daisyui.com/images/profile/demo/3@94.webp',
       role: 'Backend',
-      tasks: [{ name: 'ENG-43: Seek first', days: 5, start: '2025-01-26' }],
+      tasks: [{ id: 789, title: 'ENG-43: Seek first', description: 'baz', days: 5, startDate: '2025-01-26', color: 'red' }],
     },
     {
       name: 'Marjy Ferencz',
@@ -49,21 +49,11 @@ function POC() {
   return (
     <>
       <TopBar />
-      <Datepicker value={value} onChange={(newValue) => setValue(newValue)} />
+      <Datepicker value={dateValue} onChange={(newValue) => setDateValue(newValue)} />
       <div className="container mx-auto px-3 my-3">
         <input type="range" min={0} max={14} value={zoom} onChange={(ev) => setZoom(+ev.currentTarget.value)} className="range my-5 w-64" />
-        <WorkBlock
-          id={213}
-          color={'yellow'}
-          title={'ENG-43: Do the thing'}
-          days={5}
-          zoom={14 - zoom}
-          open={open}
-          onClose={() => setOpen(false)}
-          onClick={() => setOpen(true)}
-        />
-
         <div className="overflow-x-scroll">
+          <PlannerTable startDate={dateValue.startDate} endDate={dateValue.endDate} people={plan} zoom={14 - zoom} />
           <table className="table order-collapse text-nowrap table-pin-cols table-fixed">
             <thead>
               <tr>
@@ -78,8 +68,8 @@ function POC() {
               </tr>
               <tr className="text-center">
                 <th>
-                  <label className="input input-ghost flex items-center w-56">
-                    <input type="text" className="w-44" placeholder="Search" />
+                  <label className="input input-ghost flex items-center w-full">
+                    <input type="text" className="w-full" placeholder="Search" />
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4 opacity-70">
                       <path
                         fillRule="evenodd"
