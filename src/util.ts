@@ -8,4 +8,8 @@ const getCellWidth = (zoom?: number): number => {
   return widths[zoom];
 };
 
-export { getCellWidth };
+const getCellHeight = (): number => {
+  return 85;
+};
+
+export { getCellWidth, getCellHeight };

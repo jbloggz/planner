@@ -1,14 +1,14 @@
-import Draggable from 'react-draggable';
 import { Person } from '../types';
-import { getCellWidth } from '../util';
+import { getCellHeight, getCellWidth } from '../util';
 import SearchInput from './SearchInput';
-import WorkBlock from './WorkBlock';
+import DraggableWorkBlock from './DraggableWorkBlock';
 
 interface PlannerTableProps {
   startDate: Date;
   endDate: Date;
   people: Person[];
   zoom: number;
+  onTaskMove: (taskId: number, oldPersonId: number, newPersonId: number, date: string) => void;
 }
 
 function PlannerTable(props: PlannerTableProps) {
@@ -55,8 +55,8 @@ function PlannerTable(props: PlannerTableProps) {
         </tr>
       </thead>
       <tbody>
-        {props.people.map((person) => (
-          <tr key={person.name} className="h-[85px]">
+        {props.people.map((person, rowIndex) => (
+          <tr key={person.name} style={{ height: getCellHeight() }}>
             <th>
               <div className="flex items-center gap-3">
                 <div className="avatar">
@@ -70,7 +70,7 @@ function PlannerTable(props: PlannerTableProps) {
                 </div>
               </div>
             </th>
-            {days.map((day, index) => (
+            {days.map((day, colIndex) => (
               <td key={day.toISOString()}>
                 {person.tasks
                   .filter((task) => {
@@ -79,11 +79,20 @@ function PlannerTable(props: PlannerTableProps) {
                     return taskDate.getTime() == day.getTime();
                   })
                   .map((task) => (
-                    <Draggable key={task.id} grid={[cellWidth, 85]} bounds={{ left: -cellWidth * index, right: cellWidth * 12, top: 0, bottom: 170 }}>
-                      <div>
-                        <WorkBlock id={task.id} key={task.title} color={task.color} title={task.title} days={task.days} zoom={props.zoom} />
-                      </div>
-                    </Draggable>
+                    <DraggableWorkBlock
+                      key={task.id}
+                      task={task}
+                      zoom={props.zoom}
+                      row={rowIndex}
+                      col={colIndex}
+                      nrows={props.people.length}
+                      ncols={days.length}
+                      onTaskMove={(id, row, col) => {
+                        const newDay = new Date(day);
+                        newDay.setDate(newDay.getDate() + col - colIndex + 1);
+                        props.onTaskMove(id, person.id, props.people[row].id, newDay.toISOString().split('T')[0]);
+                      }}
+                    />
                   ))}
               </td>
             ))}

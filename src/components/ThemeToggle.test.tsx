@@ -33,6 +33,8 @@ describe('ThemeToggle', () => {
     const toggleInput: HTMLInputElement = screen.getByRole('checkbox');
     fireEvent.click(toggleInput);
     expect(toggleInput.checked).toBe(true);
+    fireEvent.click(toggleInput);
+    expect(toggleInput.checked).toBe(false);
   });
 
   it('applies custom className', () => {

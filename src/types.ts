@@ -31,6 +31,7 @@ export interface Task {
 }
 
 export interface Person {
+  id: number
   name: string;
   avatar: string;
   role: string;
