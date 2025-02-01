@@ -23,6 +23,7 @@ export type workBlockColor =
 
 export interface Task {
   id: number;
+  person?: number;
   title: string;
   description: string;
   days: number;
@@ -35,5 +36,4 @@ export interface Person {
   name: string;
   avatar: string;
   role: string;
-  tasks: Task[];
 }

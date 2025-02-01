@@ -1,4 +1,4 @@
-import { Person } from '../types';
+import { Person, Task } from '../types';
 import { getCellHeight, getCellWidth } from '../util';
 import SearchInput from './SearchInput';
 import DraggableWorkBlock from './DraggableWorkBlock';
@@ -7,8 +7,9 @@ interface PlannerTableProps {
   startDate: Date;
   endDate: Date;
   people: Person[];
+  tasks: Task[];
   zoom: number;
-  onTaskMove: (taskId: number, oldPersonId: number, newPersonId: number, date: string) => void;
+  onTaskMove: (taskId: number, personId: number, date: string) => void;
 }
 
 function PlannerTable(props: PlannerTableProps) {
@@ -28,6 +29,7 @@ function PlannerTable(props: PlannerTableProps) {
   }, new Map());
 
   const cellWidth = getCellWidth(props.zoom);
+
   return (
     <table className="table order-collapse text-nowrap table-pin-cols table-fixed">
       <thead>
@@ -72,11 +74,11 @@ function PlannerTable(props: PlannerTableProps) {
             </th>
             {days.map((day, colIndex) => (
               <td key={day.toISOString()}>
-                {person.tasks
+                {props.tasks
                   .filter((task) => {
                     const taskDate = new Date(task.startDate);
                     taskDate.setHours(0, 0, 0, 0);
-                    return taskDate.getTime() == day.getTime();
+                    return task.person === person.id && taskDate.getTime() == day.getTime();
                   })
                   .map((task) => (
                     <DraggableWorkBlock
@@ -90,7 +92,7 @@ function PlannerTable(props: PlannerTableProps) {
                       onTaskMove={(id, row, col) => {
                         const newDay = new Date(day);
                         newDay.setDate(newDay.getDate() + col - colIndex + 1);
-                        props.onTaskMove(id, person.id, props.people[row].id, newDay.toISOString().split('T')[0]);
+                        props.onTaskMove(id, props.people[row].id, newDay.toISOString().split('T')[0]);
                       }}
                     />
                   ))}

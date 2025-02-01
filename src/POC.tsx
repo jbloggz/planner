@@ -2,7 +2,7 @@ import { useState } from 'react';
 import TopBar from './components/TopBar';
 import Datepicker, { DateRangeType } from 'react-tailwindcss-datepicker';
 import PlannerTable from './components/PlannerTable';
-import { Person } from './types';
+import { Person, Task } from './types';
 
 /* istanbul ignore next -- @preserve */
 function POC() {
@@ -15,50 +15,32 @@ function POC() {
   };
   const [dateValue, setDateValue] = useState<DateRangeType>(defaultDateRange);
 
-  const [plan, setPlan] = useState<Person[]>([
+  const [people, setPeople] = useState<Person[]>([
     {
       id: 23,
       name: 'Hart Hagerty',
       avatar: 'https://img.daisyui.com/images/profile/demo/2@94.webp',
       role: 'Frontend',
-      tasks: [
-        { id: 123, title: 'ENG-41: Seek first', description: 'foo', days: 2, startDate: '2025-02-02', color: 'blue' },
-        { id: 456, title: 'ENG-42: Seek first', description: 'bar', days: 4, startDate: '2025-02-06', color: 'green' },
-      ],
     },
     {
       id: 25,
       name: 'Brice Swyre',
       avatar: 'https://img.daisyui.com/images/profile/demo/3@94.webp',
       role: 'Backend',
-      tasks: [{ id: 789, title: 'ENG-43: Seek first', description: 'baz', days: 5, startDate: '2025-01-26', color: 'red' }],
     },
     {
       id: 54,
       name: 'Marjy Ferencz',
       avatar: 'https://img.daisyui.com/images/profile/demo/4@94.webp',
       role: 'QA',
-      tasks: [],
     },
   ]);
 
-  const moveTask = (taskId: number, oldPersonId: number, newPersonId: number, date: string) => {
-    const taskToMove = plan.find((person) => person.id === oldPersonId)?.tasks.find((task) => task.id === taskId);
-    if (!taskToMove) {
-      return;
-    }
-
-    const newPlan = plan.map((person) => {
-      if (person.id === oldPersonId) {
-        person.tasks = person.tasks.filter((task) => task.id !== taskId);
-      }
-      if (person.id === newPersonId) {
-        person.tasks.push({ ...taskToMove, startDate: date });
-      }
-      return person;
-    });
-    setPlan(newPlan);
-  };
+  const [tasks, setTasks] = useState<Task[]>([
+    { id: 123, person: 23, title: 'ENG-41: Seek first', description: 'foo', days: 2, startDate: '2025-02-02', color: 'blue' },
+    { id: 456, person: 23, title: 'ENG-42: Seek first', description: 'bar', days: 4, startDate: '2025-02-06', color: 'green' },
+    { id: 789, person: 25, title: 'ENG-43: Seek first', description: 'baz', days: 5, startDate: '2025-01-26', color: 'red' },
+  ]);
 
   return (
     <>
@@ -70,9 +52,19 @@ function POC() {
           <PlannerTable
             startDate={dateValue.startDate ?? defaultDateRange.startDate}
             endDate={dateValue.endDate ?? defaultDateRange.endDate}
-            people={plan}
+            people={people}
+            tasks={tasks}
             zoom={14 - zoom}
-            onTaskMove={(taskId, oldPersonId, newPersonId, date) => moveTask(taskId, oldPersonId, newPersonId, date)}
+            onTaskMove={(taskId, personId, date) => {
+              const newTasks = tasks.map((task) => {
+                if (task.id === taskId) {
+                  task.startDate = date;
+                  task.person = personId;
+                }
+                return task;
+              });
+              setTasks(newTasks);
+            }}
           />
         </div>
       </div>
