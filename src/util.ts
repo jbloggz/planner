@@ -12,4 +12,18 @@ const getCellHeight = (): number => {
   return 85;
 };
 
-export { getCellWidth, getCellHeight };
+const toEpochDays = (date: Date | string): number => {
+  if (typeof date === 'string') {
+    date = new Date(date);
+  }
+  const epoch = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  return Math.floor(epoch / (1000 * 60 * 60 * 24));
+};
+
+const fromEpochDays = (days: number): string => {
+  const date = new Date(Date.UTC(1970, 0, 1));
+  date.setDate(date.getDate() + days);
+  return date.toISOString().split('T')[0];
+}
+
+export { getCellWidth, getCellHeight, toEpochDays, fromEpochDays };

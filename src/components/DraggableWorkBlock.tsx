@@ -23,7 +23,7 @@ function DraggableWorkBlock(props: WorkBlockProps & DraggableWorkBlockProps) {
       grid={[cellWidth, cellHeight]}
       onStop={(_, data) => props.onTaskMove(props.task.id, props.row + data.y / cellHeight, props.col + data.x / cellWidth)}
       bounds={{
-        left: -cellWidth * (props.col + props.task.days - 1),
+        left: -cellWidth * props.col,
         right: cellWidth * (props.ncols - props.col - 1),
         top: -props.row * cellHeight,
         bottom: (props.nrows - 1 - props.row) * cellHeight,

@@ -1,7 +1,8 @@
 import { Person, Task } from '../types';
-import { getCellHeight, getCellWidth } from '../util';
+import { getCellHeight, getCellWidth, toEpochDays } from '../util';
 import SearchInput from './SearchInput';
 import DraggableWorkBlock from './DraggableWorkBlock';
+import WorkBlock from './WorkBlock';
 
 interface PlannerTableProps {
   startDate: Date;
@@ -13,10 +14,9 @@ interface PlannerTableProps {
 }
 
 function PlannerTable(props: PlannerTableProps) {
-  const days = Array.from({ length: (props.endDate.getTime() - props.startDate.getTime()) / (1000 * 60 * 60 * 24) + 1 }).map((_, index) => {
+  const days = Array.from({ length: toEpochDays(props.endDate) - toEpochDays(props.startDate) + 1 }).map((_, index) => {
     const date = new Date(props.startDate);
     date.setDate(date.getDate() + index);
-    date.setHours(0, 0, 0, 0);
     return date;
   });
   const months = days.reduce((acc, day) => {
@@ -75,11 +75,7 @@ function PlannerTable(props: PlannerTableProps) {
             {days.map((day, colIndex) => (
               <td key={day.toISOString()}>
                 {props.tasks
-                  .filter((task) => {
-                    const taskDate = new Date(task.startDate);
-                    taskDate.setHours(0, 0, 0, 0);
-                    return task.person === person.id && taskDate.getTime() == day.getTime();
-                  })
+                  .filter((task) => task.person === person.id && toEpochDays(task.startDate) === toEpochDays(day))
                   .map((task) => (
                     <DraggableWorkBlock
                       key={task.id}
@@ -96,6 +92,20 @@ function PlannerTable(props: PlannerTableProps) {
                       }}
                     />
                   ))}
+
+                {colIndex === 0 &&
+                  props.tasks
+                    .filter(
+                      (task) =>
+                        task.person === person.id &&
+                        toEpochDays(task.startDate) < toEpochDays(day) &&
+                        toEpochDays(task.startDate) + task.days >= toEpochDays(day)
+                    )
+                    .map((task) => (
+                      <div key={task.id} style={{ transform: `translate(${cellWidth * (toEpochDays(task.startDate) - toEpochDays(day))}px)` }}>
+                        <WorkBlock task={task} zoom={props.zoom} />
+                      </div>
+                    ))}
               </td>
             ))}
           </tr>
