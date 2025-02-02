@@ -24,6 +24,10 @@ const fromEpochDays = (days: number): string => {
   const date = new Date(Date.UTC(1970, 0, 1));
   date.setDate(date.getDate() + days);
   return date.toISOString().split('T')[0];
-}
+};
 
-export { getCellWidth, getCellHeight, toEpochDays, fromEpochDays };
+const dateToString = (date: Date): string => {
+  return fromEpochDays(toEpochDays(date));
+};
+
+export { getCellWidth, getCellHeight, toEpochDays, fromEpochDays, dateToString };

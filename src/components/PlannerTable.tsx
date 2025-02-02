@@ -1,5 +1,5 @@
 import { Person, Task } from '../types';
-import { getCellHeight, getCellWidth, toEpochDays } from '../util';
+import { dateToString, getCellHeight, getCellWidth, toEpochDays } from '../util';
 import SearchInput from './SearchInput';
 import DraggableWorkBlock from './DraggableWorkBlock';
 import WorkBlock from './WorkBlock';
@@ -11,6 +11,8 @@ interface PlannerTableProps {
   tasks: Task[];
   zoom: number;
   onTaskMove: (taskId: number, personId: number, date: string) => void;
+  onTaskUpdate: (task: Task) => void;
+  onTaskAdd: (task: Task) => void;
 }
 
 function PlannerTable(props: PlannerTableProps) {
@@ -73,7 +75,28 @@ function PlannerTable(props: PlannerTableProps) {
               </div>
             </th>
             {days.map((day, colIndex) => (
-              <td key={day.toISOString()}>
+              <td
+                key={day.toISOString()}
+                onClick={() => {
+                  if (
+                    props.tasks.filter(
+                      (task) =>
+                        task.person === person.id &&
+                        toEpochDays(task.startDate) <= toEpochDays(day) &&
+                        toEpochDays(task.startDate) + task.days > toEpochDays(day)
+                    ).length === 0
+                  ) {
+                    props.onTaskAdd({
+                      id: new Date().getTime(),
+                      person: person.id,
+                      title: '',
+                      days: 1,
+                      description: '',
+                      startDate: dateToString(day),
+                      color: 'gray',
+                    });
+                  }
+                }}>
                 {props.tasks
                   .filter((task) => task.person === person.id && toEpochDays(task.startDate) === toEpochDays(day))
                   .map((task) => (
@@ -90,6 +113,7 @@ function PlannerTable(props: PlannerTableProps) {
                         newDay.setDate(newDay.getDate() + col - colIndex + 1);
                         props.onTaskMove(id, props.people[row].id, newDay.toISOString().split('T')[0]);
                       }}
+                      onTaskUpdate={props.onTaskUpdate}
                     />
                   ))}
 

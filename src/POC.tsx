@@ -58,7 +58,6 @@ function POC() {
             tasks={tasks}
             zoom={zoom}
             onTaskMove={(taskId, personId, date) => {
-              console.log(taskId, personId, date);
               const newTasks = tasks.map((task) => {
                 if (task.id === taskId) {
                   task.startDate = date;
@@ -68,6 +67,15 @@ function POC() {
               });
               setTasks(newTasks);
               setPlan(JSON.stringify({ people, tasks: newTasks }, null, 2));
+            }}
+            onTaskUpdate={(task) => {
+              const newTasks = tasks.map((t) => (t.id === task.id ? task : t));
+              setTasks(newTasks);
+              setPlan(JSON.stringify({ people, tasks: newTasks }, null, 2));
+            }}
+            onTaskAdd={(task) => {
+              setTasks([...tasks, task]);
+              setPlan(JSON.stringify({ people, tasks: [...tasks, task] }, null, 2));
             }}
           />
         </div>
