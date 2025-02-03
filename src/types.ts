@@ -37,3 +37,8 @@ export interface Person {
   avatar: string;
   role: string;
 }
+
+export interface Plan {
+  people: Person[];
+  tasks: Task[];
+}

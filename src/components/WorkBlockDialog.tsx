@@ -5,6 +5,7 @@ interface WorkBlockDialogProps {
   task: Task;
   open?: boolean;
   onClose: (task: Task) => void;
+  onDelete: (id: number) => void;
 }
 
 function WorkBlockDialog(props: WorkBlockDialogProps) {
@@ -123,9 +124,12 @@ function WorkBlockDialog(props: WorkBlockDialogProps) {
               </option>
             </select>
           </label>
-          <div className="flex flex-row">
-            <div className="flex-grow"></div>
+          <div className="flex flex-row mt-5">
             <button className="btn">Save</button>
+            <div className="flex-grow"></div>
+            <button className="btn btn-error opacity-60" onClick={() => props.onDelete(props.task.id)}>
+              Delete
+            </button>
           </div>
         </form>
       </div>

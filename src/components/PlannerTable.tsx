@@ -13,6 +13,7 @@ interface PlannerTableProps {
   onTaskMove: (taskId: number, personId: number, date: string) => void;
   onTaskUpdate: (task: Task) => void;
   onTaskAdd: (task: Task) => void;
+  onTaskDelete: (taskId: number) => void;
 }
 
 function PlannerTable(props: PlannerTableProps) {
@@ -114,6 +115,7 @@ function PlannerTable(props: PlannerTableProps) {
                         props.onTaskMove(id, props.people[row].id, newDay.toISOString().split('T')[0]);
                       }}
                       onTaskUpdate={props.onTaskUpdate}
+                      onTaskDelete={props.onTaskDelete}
                     />
                   ))}
 

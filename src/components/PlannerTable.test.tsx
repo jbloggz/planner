@@ -47,17 +47,23 @@ describe('PlannerTable', () => {
   };
 
   it('renders a table', () => {
-    const { container } = render(<PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} />);
+    const { container } = render(
+      <PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} onTaskDelete={() => {}} />
+    );
     expect(container.querySelector('table')).not.toBeNull();
   });
 
   it('displays the correct number of header rows', () => {
-    const { container } = render(<PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} />);
+    const { container } = render(
+      <PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} onTaskDelete={() => {}} />
+    );
     expect(container.querySelectorAll('thead tr')).toHaveLength(2);
   });
 
   it('displays the correct number of data rows', () => {
-    const { container } = render(<PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} />);
+    const { container } = render(
+      <PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} onTaskDelete={() => {}} />
+    );
     expect(container.querySelectorAll('tbody tr')).toHaveLength(3);
 
     const props2 = {
@@ -68,12 +74,16 @@ describe('PlannerTable', () => {
     };
 
     expect(
-      render(<PlannerTable {...props2} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} />).container.querySelectorAll('tbody tr')
+      render(
+        <PlannerTable {...props2} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} onTaskDelete={() => {}} />
+      ).container.querySelectorAll('tbody tr')
     ).toHaveLength(2);
   });
 
   it('displays a header column with an empty top column, then a search input and the people below', () => {
-    const { container } = render(<PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} />);
+    const { container } = render(
+      <PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} onTaskDelete={() => {}} />
+    );
     expect(container.querySelector('thead tr:first-child th:first-child')?.innerHTML).toEqual('');
     expect(container.querySelector('thead tr:last-child th:first-child input')).not.toBeNull();
     const people = container.querySelectorAll('tbody tr th');
@@ -84,13 +94,17 @@ describe('PlannerTable', () => {
   });
 
   it('displays the correct number of days', () => {
-    const { container } = render(<PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} />);
+    const { container } = render(
+      <PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} onTaskDelete={() => {}} />
+    );
     const days = container.querySelectorAll('thead tr:last-child td');
     expect(days).toHaveLength(98);
   });
 
   it('displays the correct number of months', () => {
-    const { container } = render(<PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} />);
+    const { container } = render(
+      <PlannerTable {...props} zoom={1} onTaskMove={vi.fn()} onTaskAdd={() => {}} onTaskUpdate={() => {}} onTaskDelete={() => {}} />
+    );
     const days = container.querySelectorAll('thead tr:first-child td');
     expect(days).toHaveLength(4);
   });

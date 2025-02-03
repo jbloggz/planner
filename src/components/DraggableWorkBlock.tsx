@@ -12,6 +12,7 @@ interface DraggableWorkBlockProps {
   col: number;
   onTaskMove: (id: number, row: number, col: number) => void;
   onTaskUpdate: (task: Task) => void;
+  onTaskDelete: (id: number) => void;
 }
 
 function DraggableWorkBlock(props: WorkBlockProps & DraggableWorkBlockProps) {
@@ -50,6 +51,7 @@ function DraggableWorkBlock(props: WorkBlockProps & DraggableWorkBlockProps) {
           setDialogOpen(false);
           props.onTaskUpdate(task);
         }}
+        onDelete={props.onTaskDelete}
       />
     </>
   );
