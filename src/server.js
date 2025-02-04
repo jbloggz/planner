@@ -15,7 +15,6 @@ app.use(express.static(path.join(root_path, '/dist')));
 
 app.post('/api/save', express.json(), async (req, res) => {
   const data = req.body;
-  const filePath = path.join(root_path, '/plan.json');
 
   const pool = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
@@ -24,6 +23,7 @@ app.post('/api/save', express.json(), async (req, res) => {
   // Save to database
   await pool.query('INSERT INTO plans (data) VALUES ($1)', [JSON.stringify(data)]);
 
+  //const filePath = path.join(root_path, '/plan.json');
   //try {
   //  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
   //  res.json({ message: 'Data saved successfully' });
