@@ -47,7 +47,8 @@ function DraggableWorkBlock(props: WorkBlockProps & DraggableWorkBlockProps) {
       <WorkBlockDialog
         task={props.task}
         open={dialogOpen}
-        onClose={(task) => {
+        onClose={() => setDialogOpen(false)}
+        onSave={(task) => {
           setDialogOpen(false);
           props.onTaskUpdate(task);
         }}

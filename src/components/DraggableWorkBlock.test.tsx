@@ -22,14 +22,38 @@ const draggableInstance = (): DraggableProps => {
 
 describe('DraggableWorkBlock', () => {
   it('renders without crashing', () => {
-    const { container } = render(<DraggableWorkBlock task={mockTask} nrows={10} ncols={10} row={2} col={3} zoom={1} onTaskMove={() => {}} />);
+    const { container } = render(
+      <DraggableWorkBlock
+        task={mockTask}
+        nrows={10}
+        ncols={10}
+        row={2}
+        col={3}
+        zoom={1}
+        onTaskMove={() => {}}
+        onTaskUpdate={() => {}}
+        onTaskDelete={() => {}}
+      />
+    );
     const draggableElement = container.querySelector('div');
     expect(draggableElement).not.toBeNull();
   });
 
   it('calls onChange with correct parameters when dragged', () => {
     const handleChange = vi.fn();
-    render(<DraggableWorkBlock task={mockTask} nrows={10} ncols={100} row={2} col={3} zoom={1} onTaskMove={handleChange} />);
+    render(
+      <DraggableWorkBlock
+        task={mockTask}
+        nrows={10}
+        ncols={100}
+        row={2}
+        col={3}
+        zoom={1}
+        onTaskMove={handleChange}
+        onTaskUpdate={() => {}}
+        onTaskDelete={() => {}}
+      />
+    );
     expect(draggableInstance().grid).toEqual([80, 85]);
     draggableInstance().onStop({} as DraggableEvent, { x: 240, y: 170 } as DraggableData);
     expect(handleChange).toHaveBeenCalledWith(1, 4, 6);

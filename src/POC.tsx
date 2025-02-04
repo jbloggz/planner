@@ -59,13 +59,13 @@ function POC() {
 
   const undo = useCallback(() => {
     setPlan(JSON.parse(history.data[history.index - 1]));
-    setJsonPlan(JSON.stringify(history.data[history.index - 1], null, 2));
+    setJsonPlan(history.data[history.index - 1]);
     setHistory((h) => ({ index: h.index - 1, data: h.data }));
   }, [history]);
 
   const redo = useCallback(() => {
     setPlan(JSON.parse(history.data[history.index + 1]));
-    setJsonPlan(JSON.stringify(history.data[history.index + 1], null, 2));
+    setJsonPlan(history.data[history.index + 1]);
     setHistory((h) => ({ index: h.index + 1, data: h.data }));
   }, [history]);
 

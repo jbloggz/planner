@@ -11,38 +11,38 @@ describe('WorkBlockDialog', () => {
   });
 
   it('renders the dialog', () => {
-    const container = render(<WorkBlockDialog task={mockTask} onClose={() => {}} />).container;
-    render(<WorkBlockDialog task={mockTask} onClose={() => {}} />);
+    const container = render(<WorkBlockDialog task={mockTask} onClose={() => {}} onSave={() => {}} />).container;
+    render(<WorkBlockDialog task={mockTask} onClose={() => {}} onSave={() => {}} />);
     expect(container.querySelector('dialog')).not.toBeNull();
   });
 
   it('renders the title input', () => {
-    const { getByLabelText } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} />);
+    const { getByLabelText } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} onSave={() => {}} />);
     expect(getByLabelText('Title')).not.toBeNull();
   });
 
   it('renders the description textarea', () => {
-    const { getByLabelText } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} />);
+    const { getByLabelText } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} onSave={() => {}} />);
     expect(getByLabelText('Description')).not.toBeNull();
   });
 
   it('renders the days input', () => {
-    const { getByLabelText } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} />);
+    const { getByLabelText } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} onSave={() => {}} />);
     expect(getByLabelText('Days')).not.toBeNull();
   });
 
   it('renders the save button', () => {
-    const { getByText } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} />);
+    const { getByText } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} onSave={() => {}} />);
     expect(getByText('Save')).not.toBeNull();
   });
 
   it('renders the dialog with open prop', () => {
-    const { container } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} open={true} />);
+    const { container } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} onSave={() => {}} open={true} />);
     expect(container.querySelector('dialog')?.hasAttribute('open')).toBe(true);
   });
 
   it('does not render the dialog when open prop is false', () => {
-    const { container } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} open={false} />);
+    const { container } = render(<WorkBlockDialog task={mockTask} onClose={() => {}} onSave={() => {}} open={false} />);
     expect(container.querySelector('dialog')?.hasAttribute('open')).toBe(false);
   });
 });

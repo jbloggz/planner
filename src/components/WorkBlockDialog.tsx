@@ -4,18 +4,34 @@ import { Task, workBlockColor } from '../types';
 interface WorkBlockDialogProps {
   task: Task;
   open?: boolean;
-  onClose: (task: Task) => void;
-  onDelete: (id: number) => void;
+  onClose: () => void;
+  onSave: (task: Task) => void;
+  onDelete?: (id: number) => void;
 }
 
 function WorkBlockDialog(props: WorkBlockDialogProps) {
   const [task, setTask] = useState(props.task);
 
+  const saveTask = () => {
+    if (task == props.task) {
+      props.onClose();
+      return;
+    }
+    props.onSave(task);
+  };
+
   return (
-    <dialog className="modal" open={props.open} onClose={() => props.onClose(task)}>
+    <dialog className="modal" open={props.open} onClose={saveTask}>
       <div className="modal-box">
         <form method="dialog">
-          <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          <button
+            className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            onClick={(e) => {
+              e.preventDefault();
+              props.onClose();
+            }}>
+            ✕
+          </button>
           <label className="form-control w-full">
             <div className="label">
               <span className="label-text">Title</span>
@@ -127,9 +143,11 @@ function WorkBlockDialog(props: WorkBlockDialogProps) {
           <div className="flex flex-row mt-5">
             <button className="btn">Save</button>
             <div className="flex-grow"></div>
-            <button className="btn btn-error opacity-60" onClick={() => props.onDelete(props.task.id)}>
-              Delete
-            </button>
+            {props.onDelete && (
+              <button className="btn btn-error opacity-60" onClick={() => props.onDelete && props.onDelete(props.task.id)}>
+                Delete
+              </button>
+            )}
           </div>
         </form>
       </div>
