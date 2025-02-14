@@ -38,13 +38,24 @@ app.post('/api/save', express.json(), async (req, res) => {
   }
 });
 
-app.get('/api/load', express.json(), async (req, res) => {
+app.get('/api/load', express.json(), async (_, res) => {
   try {
-    const query = `SELECT plan FROM plan ORDER BY date DESC LIMIT 1`
+    const query = `SELECT plan FROM plan ORDER BY date DESC LIMIT 1`;
     const result = await pool.query(query);
-    res.json(result.rows[0].plan);
+    const resp =
+      result.rows.length === 0
+        ? {
+            range: {
+              startDate: '',
+              endDate: '',
+            },
+            people: [],
+            tasks: [],
+          }
+        : result.rows[0].plan;
+    res.json(resp);
   } catch (error) {
-    res.status(500).json({ error: `Failed to save data; ${error}` });
+    res.status(500).json({ error: `Failed to load data; ${error}` });
   }
 });
 

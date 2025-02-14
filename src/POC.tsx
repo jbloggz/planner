@@ -52,6 +52,7 @@ function POC(props: POCProps) {
     setPlan(newPlan);
     const newJsonPlan = JSON.stringify(newPlan, null, 2);
     setJsonPlan(newJsonPlan);
+    setDateValue({ startDate: new Date(newPlan.range.startDate), endDate: new Date(newPlan.range.endDate) });
     setHistory((h) => ({ index: h.index + 1, data: [...h.data.slice(0, h.index + 1), newJsonPlan] }));
   }, []);
 
@@ -110,7 +111,13 @@ function POC(props: POCProps) {
   return (
     <>
       <TopBar />
-      <Datepicker value={dateValue} onChange={(newValue) => newValue && setDateValue(newValue)} />
+      <Datepicker
+        value={dateValue}
+        onChange={(newValue) =>
+          newValue &&
+          updatePlan({ ...plan, range: { startDate: dateToString(newValue.startDate ?? new Date()), endDate: dateToString(newValue.endDate ?? new Date()) } })
+        }
+      />
       <div className="container mx-auto px-10 my-3 max-w-full flex flex-col gap-10 flex-grow">
         <div className="flex gap-5">
           <input type="range" min={0} max={14} value={14 - zoom} onChange={(ev) => setZoom(14 - +ev.currentTarget.value)} className="range my-5 w-64" />
@@ -137,8 +144,18 @@ function POC(props: POCProps) {
             onTaskUpdate={(task) => updatePlan({ ...plan, tasks: plan.tasks.map((t) => (t.id === task.id ? task : t)) })}
             onTaskAdd={(task) => updatePlan({ ...plan, tasks: [...plan.tasks, task] })}
             onTaskDelete={(taskId) => updatePlan({ ...plan, tasks: plan.tasks.filter((task) => task.id !== taskId) })}
-            onDecreaseStart={() => setDateValue({ startDate: addDays(dateValue.startDate ?? '', -5), endDate: dateValue.endDate })}
-            onIncreaseEnd={() => setDateValue({ startDate: dateValue.startDate, endDate: addDays(dateValue.endDate ?? '', 5) })}
+            onDecreaseStart={() =>
+              updatePlan({
+                ...plan,
+                range: { startDate: dateToString(addDays(dateValue.startDate ?? '', -5)), endDate: dateToString(dateValue.endDate ?? new Date()) },
+              })
+            }
+            onIncreaseEnd={() =>
+              updatePlan({
+                ...plan,
+                range: { startDate: dateToString(dateValue.startDate ?? new Date()), endDate: dateToString(addDays(dateValue.endDate ?? '', 5)) },
+              })
+            }
           />
         </div>
         <div className="collapse collapse-arrow border-base-300 bg-base-200 border">
