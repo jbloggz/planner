@@ -30,4 +30,18 @@ const dateToString = (date: Date): string => {
   return fromEpochDays(toEpochDays(date));
 };
 
-export { getCellWidth, getCellHeight, toEpochDays, fromEpochDays, dateToString };
+const addDays = (startDate: Date | string, days: number): Date => {
+  const date = new Date(startDate);
+  let count = Math.abs(days);
+  const increment = days / Math.abs(days);
+  while (count > 0) {
+    date.setDate(date.getDate() + increment);
+    while (date.getDay() === 0 || date.getDay() === 6) {
+      date.setDate(date.getDate() + increment);
+    }
+    count--;
+  }
+  return date;
+};
+
+export { getCellWidth, getCellHeight, toEpochDays, fromEpochDays, dateToString, addDays };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Task, workBlockColor } from '../types';
 
 interface WorkBlockDialogProps {
@@ -12,13 +12,26 @@ interface WorkBlockDialogProps {
 function WorkBlockDialog(props: WorkBlockDialogProps) {
   const [task, setTask] = useState(props.task);
 
-  const saveTask = () => {
+  const saveTask = useCallback(() => {
     if (task == props.task) {
       props.onClose();
       return;
     }
     props.onSave(task);
-  };
+  }, [task, props]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [task, saveTask]);
 
   return (
     <dialog className="modal" open={props.open} onClose={saveTask}>

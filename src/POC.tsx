@@ -3,52 +3,50 @@ import TopBar from './components/TopBar';
 import Datepicker, { DateRangeType } from 'react-tailwindcss-datepicker';
 import PlannerTable from './components/PlannerTable';
 import { Plan } from './types';
+import { addDays, dateToString } from './util';
+
+interface POCProps {
+  plan: Plan;
+}
 
 /* istanbul ignore next -- @preserve */
-function POC() {
-  const [zoom, setZoom] = useState(8);
+function POC(props: POCProps) {
+  const [plan, setPlan] = useState<Plan>(props.plan);
 
-  const today = new Date();
+  const [zoom, setZoom] = useState(8);
   const defaultDateRange = {
-    startDate: new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1),
-    endDate: new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3 + 4, 0),
+    startDate: new Date(plan.range.startDate),
+    endDate: new Date(plan.range.endDate),
   };
   const [dateValue, setDateValue] = useState<DateRangeType>(defaultDateRange);
-
-  const [plan, setPlan] = useState<Plan>({
-    people: [
-      {
-        id: 23,
-        name: 'Hart Hagerty',
-        avatar: 'https://img.daisyui.com/images/profile/demo/2@94.webp',
-        role: 'Frontend',
-      },
-      {
-        id: 25,
-        name: 'Brice Swyre',
-        avatar: 'https://img.daisyui.com/images/profile/demo/3@94.webp',
-        role: 'Backend',
-      },
-      {
-        id: 54,
-        name: 'Marjy Ferencz',
-        avatar: 'https://img.daisyui.com/images/profile/demo/4@94.webp',
-        role: 'QA',
-      },
-    ],
-    tasks: [
-      { id: 123, person: 23, title: 'ENG-41: Seek first', description: 'foo', days: 2, startDate: '2025-02-02', color: 'blue' },
-      { id: 456, person: 25, title: 'ENG-42: Seek first', description: 'bar', days: 4, startDate: '2025-01-06', color: 'green' },
-      { id: 789, person: 23, title: 'ENG-43: Seek first', description: 'baz', days: 5, startDate: '2025-01-16', color: 'red' },
-    ],
-  });
-
   const [jsonPlan, setJsonPlan] = useState(JSON.stringify(plan, null, 2));
   const [history, setHistory] = useState({ index: 0, data: [jsonPlan] });
 
   useEffect(() => {
-    console.log(history);
-  }, [history]);
+    const timeoutId = setTimeout(() => {
+      fetch('/api/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonPlan,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log('Success:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [jsonPlan]);
 
   const updatePlan = useCallback((newPlan: Plan) => {
     setPlan(newPlan);
@@ -68,6 +66,46 @@ function POC() {
     setJsonPlan(history.data[history.index + 1]);
     setHistory((h) => ({ index: h.index + 1, data: h.data }));
   }, [history]);
+
+  const moveTask = useCallback(
+    (taskId: number, personId: number, date: string) => {
+      const newTasks = plan.tasks
+        .map((task) => {
+          if (task.id === taskId) {
+            task.startDate = date;
+            task.person = personId;
+          }
+          return task;
+        })
+        .toSorted((a, b) => {
+          if (a.person !== b.person) {
+            return (a.person ?? 0) - (b.person ?? 0);
+          }
+          if (a.id === taskId) {
+            return -1;
+          }
+          if (b.id === taskId) {
+            return 1;
+          }
+          return a.startDate.localeCompare(b.startDate);
+        });
+
+      for (let i = 0; i < newTasks.length; i++) {
+        for (let j = i + 1; j < newTasks.length; j++) {
+          const aStart = new Date(newTasks[i].startDate);
+          const aEnd = addDays(aStart, newTasks[i].days);
+          const bStart = new Date(newTasks[j].startDate);
+          const bEnd = addDays(bStart, newTasks[j].days);
+          if (aStart < bEnd && bStart < aEnd && newTasks[i].person === newTasks[j].person) {
+            newTasks[j].startDate = dateToString(aEnd);
+          }
+        }
+      }
+
+      updatePlan({ ...plan, tasks: newTasks });
+    },
+    [plan, updatePlan]
+  );
 
   return (
     <>
@@ -95,19 +133,12 @@ function POC() {
             people={plan.people}
             tasks={plan.tasks}
             zoom={zoom}
-            onTaskMove={(taskId, personId, date) => {
-              const newTasks = plan.tasks.map((task) => {
-                if (task.id === taskId) {
-                  task.startDate = date;
-                  task.person = personId;
-                }
-                return task;
-              });
-              updatePlan({ ...plan, tasks: newTasks });
-            }}
+            onTaskMove={(taskId, personId, date) => moveTask(taskId, personId, date)}
             onTaskUpdate={(task) => updatePlan({ ...plan, tasks: plan.tasks.map((t) => (t.id === task.id ? task : t)) })}
             onTaskAdd={(task) => updatePlan({ ...plan, tasks: [...plan.tasks, task] })}
             onTaskDelete={(taskId) => updatePlan({ ...plan, tasks: plan.tasks.filter((task) => task.id !== taskId) })}
+            onDecreaseStart={() => setDateValue({ startDate: addDays(dateValue.startDate ?? '', -5), endDate: dateValue.endDate })}
+            onIncreaseEnd={() => setDateValue({ startDate: dateValue.startDate, endDate: addDays(dateValue.endDate ?? '', 5) })}
           />
         </div>
         <div className="collapse collapse-arrow border-base-300 bg-base-200 border">

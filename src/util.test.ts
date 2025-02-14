@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { fromEpochDays, getCellHeight, getCellWidth } from './util';
-import { toEpochDays } from './util';
+import { dateToString, fromEpochDays, getCellHeight, getCellWidth, addDays, toEpochDays } from './util';
 
 describe('getCellWidth', () => {
   it('should return the correct width for a given zoom level', () => {
@@ -71,6 +70,7 @@ describe('toEpochDays', () => {
     expect(toEpochDays(date)).toBeNaN();
   });
 });
+
 describe('fromEpochDays', () => {
   it('should return the correct date for zero epoch days', () => {
     expect(fromEpochDays(0)).toBe('1970-01-01');
@@ -94,5 +94,42 @@ describe('fromEpochDays', () => {
 
   it('should return the correct date for large negative epoch days', () => {
     expect(fromEpochDays(-1000)).toBe('1967-04-07');
+  });
+});
+
+describe('addDays', () => {
+  it('should return the correct end date for a given start date and days', () => {
+    const startDate = new Date('2024-10-10');
+    const days = 5;
+    const endDate = addDays(startDate, days);
+    expect(dateToString(endDate)).toBe('2024-10-17');
+  });
+
+  it('should skip weekends when calculating the end date', () => {
+    const startDate = new Date('2024-10-10');
+    const days = 2;
+    const endDate = addDays(startDate, days);
+    expect(dateToString(endDate)).toBe('2024-10-14');
+  });
+
+  it('should skip weekends when calculating the end date for a long duration', () => {
+    const startDate = new Date('2024-10-10');
+    const days = 7;
+    const endDate = addDays(startDate, days);
+    expect(dateToString(endDate)).toBe('2024-10-21');
+  });
+
+  it('should skip weekends when calculating the end date for a very long duration', () => {
+    const startDate = new Date('2024-10-10');
+    const days = 14;
+    const endDate = addDays(startDate, days);
+    expect(dateToString(endDate)).toBe('2024-10-30');
+  });
+
+  it('should skip weekends when calculating the end date for a very long duration that includes weekends', () => {
+    const startDate = new Date('2024-10-10');
+    const days = 16;
+    const endDate = addDays(startDate, days);
+    expect(dateToString(endDate)).toBe('2024-11-01');
   });
 });

@@ -13,23 +13,39 @@ const root_path = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 /* Serve static files from the React app */
 app.use(express.static(path.join(root_path, '/dist')));
 
+const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  user: 'planner',
+  host: '/var/run/postgresql',
+});
+
 app.post('/api/save', express.json(), async (req, res) => {
   const data = req.body;
 
-  const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
+  try {
+    const today = new Date();
+    const tzOffset = today.getTimezoneOffset();
+    const date = new Date(today.getTime() - tzOffset * 60 * 1000).toISOString().split('T')[0];
+    const query = `
+      INSERT INTO plan (date, plan)
+      VALUES ($1, $2)
+      ON CONFLICT (date) DO UPDATE
+      SET plan = $2`;
+    await pool.query(query, [date, JSON.stringify(data)]);
+    res.json({ message: 'Data saved successfully' });
+  } catch (error) {
+    res.status(500).json({ error: `Failed to save data; ${error}` });
+  }
+});
 
-  // Save to database
-  await pool.query('INSERT INTO plans (data) VALUES ($1)', [JSON.stringify(data)]);
-
-  //const filePath = path.join(root_path, '/plan.json');
-  //try {
-  //  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-  //  res.json({ message: 'Data saved successfully' });
-  //} catch (error) {
-  //  res.status(500).json({ error: `Failed to save data; ${error}` });
-  //}
+app.get('/api/load', express.json(), async (req, res) => {
+  try {
+    const query = `SELECT plan FROM plan ORDER BY date DESC LIMIT 1`
+    const result = await pool.query(query);
+    res.json(result.rows[0].plan);
+  } catch (error) {
+    res.status(500).json({ error: `Failed to save data; ${error}` });
+  }
 });
 
 /* All other requests return the React app, so it can handle routing */

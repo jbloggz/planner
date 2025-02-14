@@ -16,16 +16,20 @@ interface PlannerTableProps {
   onTaskUpdate: (task: Task) => void;
   onTaskAdd: (task: Task) => void;
   onTaskDelete: (taskId: number) => void;
+  onDecreaseStart: () => void;
+  onIncreaseEnd: () => void;
 }
 
 function PlannerTable(props: PlannerTableProps) {
   const [newTask, setNewTask] = useState<Task | null>(null);
 
-  const days = Array.from({ length: toEpochDays(props.endDate) - toEpochDays(props.startDate) + 1 }).map((_, index) => {
-    const date = new Date(props.startDate);
-    date.setDate(date.getDate() + index);
-    return date;
-  });
+  const days = Array.from({ length: toEpochDays(props.endDate) - toEpochDays(props.startDate) + 1 })
+    .map((_, index) => {
+      const date = new Date(props.startDate);
+      date.setDate(date.getDate() + index);
+      return date;
+    })
+    .filter((day) => day.getDay() !== 0 && day.getDay() !== 6);
   const months = days.reduce((acc, day) => {
     const month = day.toLocaleString('en-US', { month: 'long' });
     if (!acc.has(month)) {
@@ -42,13 +46,25 @@ function PlannerTable(props: PlannerTableProps) {
       <table className="table order-collapse text-nowrap table-pin-cols table-fixed">
         <thead>
           <tr>
-            <th className="w-64"></th>
+            <th className="w-64 text-right">
+              <button className="btn btn-ghost btn-xs" onClick={props.onDecreaseStart}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
+                </svg>
+              </button>
+            </th>
             {Array.from(months.entries()).map(([name, count]) => (
               <td className="overflow-hidden overflow-ellipsis" colSpan={count} style={{ width: cellWidth * count }} key={name}>
                 {name}
               </td>
             ))}
-            <th></th>
+            <th>
+              <button className="btn btn-ghost btn-xs" onClick={props.onIncreaseEnd}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                </svg>
+              </button>
+            </th>
           </tr>
           <tr className="text-center">
             <th>
@@ -114,11 +130,7 @@ function PlannerTable(props: PlannerTableProps) {
                         col={colIndex}
                         nrows={props.people.length}
                         ncols={days.length}
-                        onTaskMove={(id, row, col) => {
-                          const newDay = new Date(day);
-                          newDay.setDate(newDay.getDate() + col - colIndex + 1);
-                          props.onTaskMove(id, props.people[row].id, newDay.toISOString().split('T')[0]);
-                        }}
+                        onTaskMove={(id, row, col) => props.onTaskMove(id, props.people[row].id, dateToString(days[col]))}
                         onTaskUpdate={props.onTaskUpdate}
                         onTaskDelete={props.onTaskDelete}
                       />

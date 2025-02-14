@@ -44,16 +44,18 @@ function DraggableWorkBlock(props: WorkBlockProps & DraggableWorkBlockProps) {
           <WorkBlock {...props} />
         </div>
       </Draggable>
-      <WorkBlockDialog
-        task={props.task}
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        onSave={(task) => {
-          setDialogOpen(false);
-          props.onTaskUpdate(task);
-        }}
-        onDelete={props.onTaskDelete}
-      />
+      {dialogOpen && (
+        <WorkBlockDialog
+          task={props.task}
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          onSave={(task) => {
+            setDialogOpen(false);
+            props.onTaskUpdate(task);
+          }}
+          onDelete={props.onTaskDelete}
+        />
+      )}
     </>
   );
 }

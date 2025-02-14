@@ -38,7 +38,13 @@ export interface Person {
   role: string;
 }
 
+export interface DateRange {
+  startDate: string;
+  endDate: string;
+};
+
 export interface Plan {
+  range: DateRange;
   people: Person[];
   tasks: Task[];
 }
