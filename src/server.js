@@ -52,7 +52,7 @@ app.get('/api/load', express.json(), async (_, res) => {
             people: [],
             tasks: [],
           }
-        : result.rows[0].plan;
+        : JSON.parse(result.rows[0].plan);
     res.json(resp);
   } catch (error) {
     res.status(500).json({ error: `Failed to load data; ${error}` });
